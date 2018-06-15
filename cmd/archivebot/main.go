@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"time"
 
-	archivebot "github.com/dutchcoders/slackarchive-bot"
-	config "github.com/dutchcoders/slackarchive-bot/config"
+	archivebot "github.com/lunixbochs/slackarchive-bot"
+	config "github.com/lunixbochs/slackarchive-bot/config"
 
 	"github.com/codegangsta/cli"
 	_ "github.com/go-sql-driver/mysql"

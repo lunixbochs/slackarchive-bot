@@ -42,7 +42,10 @@ type Config struct {
 		Host string `yaml:"host"`
 	} `yaml:"elasticsearch"`
 
-	Tokens []string `yaml:"tokens"`
+	Tokens []struct {
+		Oauth string `yaml:"oauth"`
+		Bot   string `yaml:"bot"`
+	} `yaml:"tokens"`
 }
 
 var DefaultConfig Config = Config{}

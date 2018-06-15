@@ -21,9 +21,9 @@ import (
 	"github.com/nlopes/slack"
 	logging "github.com/op/go-logging"
 
-	config "github.com/dutchcoders/slackarchive-bot/config"
-	models "github.com/dutchcoders/slackarchive-bot/models"
-	utils "github.com/dutchcoders/slackarchive-bot/utils"
+	config "github.com/lunixbochs/slackarchive-bot/config"
+	models "github.com/lunixbochs/slackarchive-bot/models"
+	utils "github.com/lunixbochs/slackarchive-bot/utils"
 	// elastigo "github.com/mattbaird/elastigo/lib"
 
 	durable "github.com/dutchcoders/durable"
@@ -227,6 +227,7 @@ func (ab *archiveBot) runMessageHandler2() {
 
 type archiveClient struct {
 	*slack.Client
+	bot      *slack.Client
 	ab       *archiveBot
 	token    string
 	team     *slack.TeamInfo
@@ -400,7 +401,7 @@ func NewMessage(category string, body interface{}) Message {
 }
 
 func (ac *archiveClient) Bot() {
-	rtm := ac.NewRTM()
+	rtm := ac.bot.NewRTM()
 	go rtm.ManageConnection()
 
 Loop:
@@ -456,11 +457,12 @@ Loop:
 	}
 }
 
-func (ab *archiveBot) NewArchiveClient(token string) (*archiveClient, error) {
+func (ab *archiveBot) NewArchiveClient(oauthToken, botToken string) (*archiveClient, error) {
 	ac := archiveClient{
-		slack.New(token),
+		slack.New(oauthToken),
+		slack.New(botToken),
 		ab,
-		token,
+		oauthToken,
 		nil,
 		nil,
 	}
@@ -563,14 +565,14 @@ func (ab *archiveBot) Start() {
 	for _, token := range tokens {
 		var team models.Team
 		if err := db.Teams.Find(bson.M{
-			"token": token,
+			"token": token.Oauth,
 		}).One(&team); err == nil {
 			log.Info("Starting archive bot for team: %s", team.Domain)
 		} else {
-			log.Info("Starting archive bot for token: %s", token)
+			log.Info("Starting archive bot for token: %s", token.Oauth)
 		}
 
-		ac, err := ab.NewArchiveClient(token)
+		ac, err := ab.NewArchiveClient(token.Oauth, token.Bot)
 		if err == nil {
 		} else if err.Error() == "invalid_auth" || err.Error() == "account_inactive" {
 			continue
