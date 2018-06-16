@@ -414,6 +414,14 @@ Loop:
 			case *slack.ConnectedEvent:
 				// log.Debug("Connection counter: %d %s", ev.ConnectionCount, ev.Info.Team.Domain)
 				ac.channels = ev.Info.Channels
+				for _, channel := range ev.Info.Channels {
+					if !channel.IsMember && !channel.IsArchived {
+						log.Info("RTM Bot: Joining %s", channel.Name)
+						if _, err := ac.InviteUserToChannel(channel.ID, ev.Info.User.ID); err != nil {
+							log.Error("RTM Bot: Failed to join channel %s, %s", channel.Name, err.Error())
+						}
+					}
+				}
 			case *slack.MessageEvent:
 				m := models.Message{}
 
