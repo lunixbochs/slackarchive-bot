@@ -414,6 +414,7 @@ Loop:
 			case *slack.ConnectedEvent:
 				// log.Debug("Connection counter: %d %s", ev.ConnectionCount, ev.Info.Team.Domain)
 				ac.channels = ev.Info.Channels
+				ac.bot.SetUserPresence("away")
 				for _, channel := range ev.Info.Channels {
 					if !channel.IsMember && !channel.IsArchived {
 						log.Info("RTM Bot: Joining %s", channel.Name)
