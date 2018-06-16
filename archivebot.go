@@ -431,7 +431,7 @@ Loop:
 			case *slack.LatencyReport:
 			//	log.Debug("Current latency: %v", ev.Value)
 			case *slack.UserTypingEvent:
-				log.Debug("User(%s) typing...", msg.Data.(*slack.UserTypingEvent).User)
+				// log.Debug("User(%s) typing...", msg.Data.(*slack.UserTypingEvent).User)
 			case *slack.RTMError:
 				log.Debug("Error: %s", ev.Error())
 			case *slack.ConnectingEvent:
